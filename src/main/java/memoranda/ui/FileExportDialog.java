@@ -110,7 +110,7 @@ public class FileExportDialog extends javax.swing.JDialog {
         usetemplChB.setText(Local.getString("Use template")+":");
         usetemplChB.setMargin(new java.awt.Insets(0, 0, 0, 0));
         usetemplChB.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {                
+            public void actionPerformed(ActionEvent e) {    
                 if (usetemplChB.isSelected()) {
                     templF.setEnabled(true);
                     templBrowseB.setEnabled(true);
@@ -175,7 +175,7 @@ public class FileExportDialog extends javax.swing.JDialog {
         chooser.setDialogTitle(Local.getString("Select file"));
         chooser.setAcceptAllFileFilterUsed(true);
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        if (templF.getText().length() >0)
+         if (templF.getText().length() >0)
         	chooser.setCurrentDirectory(new java.io.File(templF.getText()));
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
         	templF.setText(chooser.getSelectedFile().getPath());

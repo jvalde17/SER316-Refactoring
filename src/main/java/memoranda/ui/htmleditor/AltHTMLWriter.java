@@ -2071,7 +2071,7 @@ public class AltHTMLWriter extends AbstractWriter {
         int lastWidth;
         /** Last value of height passed in. */
         int lastHeight;
-
+        
         public PolygonRegionContainment(AttributeSet as) {
             int[] coords = extractCoords(as.getAttribute(HTML.Attribute.COORDS));
 

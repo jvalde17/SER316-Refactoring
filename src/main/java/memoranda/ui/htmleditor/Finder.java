@@ -57,6 +57,7 @@ public class Finder extends Thread {
         _replace = replace;
     }
 
+    
     public Finder(HTMLEditor theEditor, String find, boolean wholeWord, boolean matchCase, boolean regexp) {
         this(theEditor, find, wholeWord, matchCase, regexp, null);
     }

@@ -79,5 +79,4 @@ public class Util {
         field.setForeground(c);
         //field.setForeground(new Color(~c.getRGB()));
     }
-
 }

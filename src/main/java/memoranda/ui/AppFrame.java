@@ -36,13 +36,13 @@ import javax.swing.text.html.HTMLDocument;
 
 import main.java.memoranda.CurrentProject;
 import main.java.memoranda.History;
-import main.java.memoranda.Note;
-import main.java.memoranda.NoteList;
-import main.java.memoranda.Project;
-import main.java.memoranda.ProjectListener;
-import main.java.memoranda.ResourcesList;
-import main.java.memoranda.TaskList;
 import main.java.memoranda.date.CurrentDate;
+import main.java.memoranda.interfaces.INote;
+import main.java.memoranda.interfaces.INoteList;
+import main.java.memoranda.interfaces.IProject;
+import main.java.memoranda.interfaces.IProjectListener;
+import main.java.memoranda.interfaces.IResourcesList;
+import main.java.memoranda.interfaces.ITaskList;
 import main.java.memoranda.ui.htmleditor.HTMLEditor;
 import main.java.memoranda.util.Configuration;
 import main.java.memoranda.util.Context;
@@ -56,7 +56,6 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
 
-
 /**
  * 
  * Copyright (c) 2003 Memoranda Team. http://memoranda.sf.net
@@ -66,6 +65,10 @@ import nu.xom.Elements;
 
 public class AppFrame extends JFrame {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     JPanel contentPane;
     JMenuBar menuBar = new JMenuBar();
     JMenu jMenuFile = new JMenu();
@@ -619,10 +622,10 @@ public class AppFrame extends JFrame {
             setEnabledEditorMenus(pan.equalsIgnoreCase("NOTES"));
         }
 
-        CurrentProject.addProjectListener(new ProjectListener() {
+        CurrentProject.addProjectListener(new IProjectListener() {
 
-            public void projectChange(Project prj, NoteList nl, TaskList tl,
-                    ResourcesList rl) {
+            public void projectChange(IProject prj, INoteList nl, ITaskList tl,
+                    IResourcesList rl) {
             }
 
             public void projectWasChanged() {
@@ -653,7 +656,7 @@ public class AppFrame extends JFrame {
                         ExitConfirmationDialog dlg = new ExitConfirmationDialog(this,Local.getString("Exit"));
                         dlg.setLocation((frmSize.width - dlg.getSize().width) / 2 + loc.x, (frmSize.height - dlg.getSize().height) / 2 + loc.y);
                         dlg.setVisible(true);
-                        if(dlg.CANCELLED) return;
+                        if(dlg.cancelled) return;
         }
 
         Context.put("FRAME_WIDTH", new Integer(this.getWidth()));
@@ -1010,7 +1013,7 @@ public class AppFrame extends JFrame {
                             content = notesContent.get(id);
                             p.setText(content);
                             HTMLDocument doc = (HTMLDocument)p.getDocument();
-                            Note note = CurrentProject.getNoteList().createNoteForDate(CurrentDate.get());
+                            INote note = CurrentProject.getNoteList().createNoteForDate(CurrentDate.get());
                     note.setTitle(name);
                             note.setId(Util.generateId());
                     CurrentStorage.get().storeNote(note, doc);
@@ -1092,7 +1095,7 @@ public class AppFrame extends JFrame {
                             System.out.println(id+" "+name+" "+content);
                             p.setText(content);
                             HTMLDocument doc = (HTMLDocument)p.getDocument();
-                            Note note = CurrentProject.getNoteList().createNoteForDate(CurrentDate.get());
+                            INote note = CurrentProject.getNoteList().createNoteForDate(CurrentDate.get());
                     note.setTitle(name);
                             note.setId(Util.generateId());
                     CurrentStorage.get().storeNote(note, doc);

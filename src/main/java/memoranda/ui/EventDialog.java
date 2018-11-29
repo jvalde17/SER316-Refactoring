@@ -39,6 +39,10 @@ import javax.swing.event.ChangeListener;
 import main.java.memoranda.date.CalendarDate;
 import main.java.memoranda.util.Local;
 
+//TASK 2-2 SMELL BETWEEN CLASSES
+//TOO MANY EVENT HANDLERS THAT DID NOT DO ANYTHING.
+
+
 /*$Id: EventDialog.java,v 1.28 2005/02/19 10:06:25 rawsushi Exp $*/
 public class EventDialog extends JDialog implements WindowListener {	
     public boolean CANCELLED = false;
@@ -503,8 +507,6 @@ public class EventDialog extends JDialog implements WindowListener {
         endDate.setEnabled(enableEndDateCB.isSelected());
         setEndDateB.setEnabled(enableEndDateCB.isSelected());        
     }
-    
-    public void windowOpened( WindowEvent e ) {}
 
     public void windowClosing( WindowEvent e ) {
         CANCELLED = true;
@@ -518,15 +520,43 @@ public class EventDialog extends JDialog implements WindowListener {
 	public Date getEventDate() {
 		return eventDate;
 	}
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+        // TODO Auto-generated method stub
+        
+    }
 	
-    public void windowClosed( WindowEvent e ) {}
 
-	public void windowIconified( WindowEvent e ) {}
-
-	public void windowDeiconified( WindowEvent e ) {}
-
-	public void windowActivated( WindowEvent e ) {}
-
-	public void windowDeactivated( WindowEvent e ) {}
 
 }

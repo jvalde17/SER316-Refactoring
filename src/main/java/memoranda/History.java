@@ -20,6 +20,8 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
+import main.java.memoranda.interfaces.IHistoryListener;
+import main.java.memoranda.interfaces.IProject;
 import main.java.memoranda.util.Local;
 /**
  * 
@@ -27,68 +29,63 @@ import main.java.memoranda.util.Local;
 /*$Id: History.java,v 1.7 2006/10/31 15:34:14 hglas Exp $*/
 public class History {
 
-    static Vector _list = new Vector();
+    static Vector<HistoryItem> _list = new Vector<HistoryItem>();
     static int p = -1;
-    static Vector historyListeners = new Vector();
+    static Vector<IHistoryListener> historyListeners = new Vector<IHistoryListener>();
     static Object next = null;
     static Object prev = null;     
-    
+
+    /**
+     * TASK 2-1 SMELL WITHIN A CLASS
+     * 
+     * add a history item
+     */
     public static void add(HistoryItem item) {
-        if (prev != null)   
-            if (item.equals(prev)) return;
-        if (p < _list.size() - 1)
-            _list.setSize(p + 1);
+        if (prev != null)  {
+            if (item.equals(prev))  { 
+                //if item equals previous, no need to save or add.
+                return;
+            }
+        }
         _list.add(item);
-        p = _list.size() - 1;
-        if (p > 0)   
-            prev = _list.get(p-1);
-        else
-            prev = null;
+        p++;
         next = null;
         historyBackAction.update();
         historyForwardAction.update();  
-        /*System.out.println();
-        for (int i = 0; i < _list.size(); i++)
-            System.out.println(((HistoryItem)_list.get(i)).getDate().toString());
-        System.out.println(item.getDate().toShortString()+ " added");*/
-        if (_list.size() > 99)
+
+        if (_list.size() > 99) {
             _list.remove(0);     
+        }
     }
 
+    /**
+     * TASK 2-1 SMELL WITHIN A CLASS.
+     * Method to rollback history. 
+     * 
+     * @return the previous History
+     */
     public static HistoryItem rollBack() {        
-        Object n = prev;        
-        if (p > 1) {                          
+        if (_list.size() > 1) {
             p--;
-            prev = _list.get(p-1);
-        } 
-        else if (p > 0) {
-            p--;
-            prev = null;
+            prev = _list.get(p);
+        }else {
+            prev = null;  
         }
-        else 
-            prev = null;      
-        if (p < _list.size() - 1)
-            next = _list.get(p+1);
-        else
-            next = null;         
-        return (HistoryItem)n;
+
+        return (HistoryItem) prev;
     }
 
     public static HistoryItem rollForward() {
-        Object n = next;        
-        if (p < _list.size() - 1) {
+    
+        if (_list.size() > 1) {
             p++;
-            if (p == 1) 
-                p++;
-            next = _list.get(p);            
-        }        
-        else
+            next = _list.get(p);  
+            
+        }        else {
             next = null;
-        if (p > 0)
-            prev = _list.get(p-1);
-        else 
-            prev = null;
-        return (HistoryItem)n;    
+        }
+        
+        return (HistoryItem)next;    
     }
 
     public static boolean canRollBack() {
@@ -99,14 +96,14 @@ public class History {
         return next != null;
     }
 
-    public static void addHistoryListener(HistoryListener hl) {
+    public static void addHistoryListener(IHistoryListener hl) {
         historyListeners.add(hl);
     }
-    
-    public static void removeProjectHistory(Project prj) {
-        Vector list = new Vector();
+
+    public static void removeProjectHistory(IProject prj) {
+        Vector<HistoryItem> list = new Vector<HistoryItem>();
         String id;
-        
+
         for (int i = 0; i < _list.size(); i++) {
             id = (((HistoryItem) _list.elementAt(i)).getProject()).getID();
             if (id.equals(prj.getID())) {
@@ -132,7 +129,7 @@ public class History {
 
     private static void notifyListeners(HistoryItem n) {
         for (int i = 0; i < historyListeners.size(); i++)            
-                 ((HistoryListener) historyListeners.get(i)).historyWasRolledTo(n);
+            ((IHistoryListener) historyListeners.get(i)).historyWasRolledTo(n);
     }
 
     public static HistoryBackAction historyBackAction = new HistoryBackAction();
@@ -142,7 +139,7 @@ public class History {
 
         public HistoryBackAction() {
             super(Local.getString("History back"), 
-            new ImageIcon(main.java.memoranda.ui.AppFrame.class.getResource("/ui/icons/hist_back.png")));
+                    new ImageIcon(main.java.memoranda.ui.AppFrame.class.getResource("/ui/icons/hist_back.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, KeyEvent.ALT_MASK));
             setEnabled(false);
         }
@@ -161,14 +158,14 @@ public class History {
             if (canRollBack()) {
                 setEnabled(true);
 
-		SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT);
-		Date date = ((HistoryItem) prev).getDate().getDate();
-		    putValue(
-                    Action.SHORT_DESCRIPTION,
-		   Local.getString("Back to") + " " + sdf.format(date));
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT);
+                Date date = ((HistoryItem) prev).getDate().getDate();
+                putValue(
+                        Action.SHORT_DESCRIPTION,
+                        Local.getString("Back to") + " " + sdf.format(date));
 
-//                putValue(Action.SHORT_DESCRIPTION, Local.getString("Back to") + " " + ((HistoryItem) prev).getDate().toString());
+                //                putValue(Action.SHORT_DESCRIPTION, Local.getString("Back to") + " " + ((HistoryItem) prev).getDate().toString());
             }
             else {
                 setEnabled(false);
@@ -181,7 +178,7 @@ public class History {
 
         public HistoryForwardAction() {
             super(Local.getString("History forward"), 
-            new ImageIcon(main.java.memoranda.ui.AppFrame.class.getResource("/ui/icons/hist_forward.png")));
+                    new ImageIcon(main.java.memoranda.ui.AppFrame.class.getResource("/ui/icons/hist_forward.png")));
             putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, KeyEvent.ALT_MASK));
             setEnabled(false);
         }
@@ -200,14 +197,14 @@ public class History {
             if (canRollForward()) {
                 setEnabled(true);
 
-		SimpleDateFormat sdf = new SimpleDateFormat();
-		sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT);
-		Date date = ((HistoryItem) next).getDate().getDate();
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf = (SimpleDateFormat)DateFormat.getDateInstance(DateFormat.SHORT);
+                Date date = ((HistoryItem) next).getDate().getDate();
 
-		    putValue(
-                    Action.SHORT_DESCRIPTION,
-                   // Local.getString("Forward to") + " " + ((HistoryItem) next).getDate().toString());
-		   Local.getString("Forward to") + " " + sdf.format(date));
+                putValue(
+                        Action.SHORT_DESCRIPTION,
+                        // Local.getString("Forward to") + " " + ((HistoryItem) next).getDate().toString());
+                        Local.getString("Forward to") + " " + sdf.format(date));
             }
             else {
                 setEnabled(false);
